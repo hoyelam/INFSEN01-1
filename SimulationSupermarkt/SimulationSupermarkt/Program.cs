@@ -1,62 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using FunctionalFunctions;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SimulationSupermarkt
 {
-    static class Program
+    class Game : Microsoft.Xna.Framework.Game
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
-            Persoon p1 = new Persoon();
-            setDefaultsPerson(p1);
+        SpriteBatch spriteBatch;
+        GraphicsDeviceManager graphics;
 
+        public Game()
+        {
+            graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
         }
 
-        class Persoon
+        protected override void LoadContent()
         {
-            public int budget { get; set; }
-            public Product[] product { get; set; }
-            public int movement { get; set; }
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            base.LoadContent();
         }
 
-        class Product
+        protected override void Update(GameTime gameTime)
         {
-            public string naam { get; set; }
-            public int prijs { get; set; }
+            base.Update(gameTime);
         }
 
-        class Store
+        protected override void Draw(GameTime gameTime)
         {
-            public double revenue { get; set; }
-        }
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        class Point
-        {
-            public int x { get; set; }
-            public int y { get; set; }
-            public Product[] itemVak { get; set; }
-            public int id { get; set; }
-        }
+            spriteBatch.Begin();
+            spriteBatch.End();
 
-        /// <summary>
-        /// spawn 
-        /// </summary>
-        /// <param name="customer"></param>
-        public static void setDefaultsPerson(Persoon customer)
+            base.Draw(gameTime);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
         {
-            customer.budget = 100;
-            customer.movement = 5;
+            using (var game = new Game())
+            {
+                game.Run();
+            }
         }
     }
 }
