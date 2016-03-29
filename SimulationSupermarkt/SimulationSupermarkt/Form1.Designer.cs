@@ -37,7 +37,6 @@
             this.BackgroundImage = global::SimulationSupermarkt.Properties.Resources.Untitled_2;
             this.ClientSize = new System.Drawing.Size(700, 687);
             this.Name = "Form1";
-            this.Text = "Form1";
             this.ResumeLayout(false);
 
         }
