@@ -8,16 +8,17 @@ type List<'a> =
   | Node of 'a * List<'a>
 let (<<) x xs = Node(x,xs)
 
-type SectionItem =
-    {
-        Position:    Vector2
-        Category:    string
-    }
-
 type Item = 
     {
         Category:    string
         Price:       int
+    }
+
+type SectionItem =
+    {
+        Position:    Vector2
+        Category:    string
+        Item:        Item
     }
 
 type Customer = 
@@ -26,6 +27,7 @@ type Customer =
         Bag:         List<Item>
         Velocity:    Vector2
         Money:       int
+        Image:       string
     }
 
 type Register =
@@ -51,6 +53,7 @@ let initialState() =
         Velocity = Vector2.Zero
         Bag = Empty
         Money = 100
+        Image = "up.png"
       }
   }
 
@@ -60,22 +63,30 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
   let speed = 1000.0f;
   let customer =
     if ks.IsKeyDown(Keys.Left) then
-      { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt }
+      { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt
+                      Image    = "left.png"
+      }
     else
       customer
   let customer = 
     if ks.IsKeyDown(Keys.Right) then
-      { customer with Velocity = customer.Velocity + Vector2.UnitX * speed * dt }
+      { customer with Velocity = customer.Velocity + Vector2.UnitX * speed * dt 
+                      Image    = "right.png"
+      }
     else
       customer
   let customer =
     if ks.IsKeyDown(Keys.Down) then
-      { customer with Velocity = customer.Velocity + Vector2.UnitY * speed * dt }
+      { customer with Velocity = customer.Velocity + Vector2.UnitY * speed * dt 
+                      Image    = "down.png"
+      }
     else
       customer
   let customer = 
     if ks.IsKeyDown(Keys.Up) then
-      { customer with Velocity = customer.Velocity - Vector2.UnitY * speed * dt }
+      { customer with Velocity = customer.Velocity - Vector2.UnitY * speed * dt 
+                      Image    = "up.png"
+      }
     else
       customer
   { customer with Position = customer.Position + customer.Velocity * dt; 
@@ -97,6 +108,6 @@ let drawState (gameState: GameState) : seq<Drawable> =
     [
         {
             Drawable.Position = gameState.Customer.Position
-            Drawable.Image    = "customer.png"
+            Drawable.Image    = gameState.Customer.Image
         }
     ] |> Seq.ofList
