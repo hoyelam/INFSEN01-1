@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationSupermarkt", "SimulationSupermarkt\SimulationSupermarkt.csproj", "{0C77272A-1BAD-4458-BD12-10BBC01AFCEF}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FunctionalFunctions", "FunctionalFunctions\FunctionalFunctions.fsproj", "{49BA6453-D72D-43B6-B284-57BD2CADE2EF}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SupermarktLogic", "SupermarktLogic\SupermarktLogic.fsproj", "{E136CEFE-CFE3-4623-8DD4-FEEE2F0AE794}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{0C77272A-1BAD-4458-BD12-10BBC01AFCEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C77272A-1BAD-4458-BD12-10BBC01AFCEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C77272A-1BAD-4458-BD12-10BBC01AFCEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49BA6453-D72D-43B6-B284-57BD2CADE2EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49BA6453-D72D-43B6-B284-57BD2CADE2EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49BA6453-D72D-43B6-B284-57BD2CADE2EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49BA6453-D72D-43B6-B284-57BD2CADE2EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E136CEFE-CFE3-4623-8DD4-FEEE2F0AE794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E136CEFE-CFE3-4623-8DD4-FEEE2F0AE794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E136CEFE-CFE3-4623-8DD4-FEEE2F0AE794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E136CEFE-CFE3-4623-8DD4-FEEE2F0AE794}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

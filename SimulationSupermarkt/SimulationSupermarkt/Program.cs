@@ -7,12 +7,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 
+
 namespace SimulationSupermarkt
 {
     class Game : Microsoft.Xna.Framework.Game
     {
         SpriteBatch spriteBatch;
         GraphicsDeviceManager graphics;
+        SupermarktLogic.GameState gameState;
 
         public Game()
         {
@@ -23,6 +25,7 @@ namespace SimulationSupermarkt
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            gameState = SupermarktLogic.initialState();
             base.LoadContent();
         }
 
@@ -36,6 +39,11 @@ namespace SimulationSupermarkt
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
+            foreach (var drawable in SupermarktLogic.drawState(gameState))
+            {
+                spriteBatch.Draw(Content.Load<Texture2D>(drawable.Image),
+                drawable.Position, Color.White);
+            }
             spriteBatch.End();
 
             base.Draw(gameTime);
