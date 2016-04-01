@@ -3,7 +3,6 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
-
 type List<'a> = 
   | Empty 
   | Node of 'a * List<'a>
