@@ -60,7 +60,7 @@ let initialState() =
 
 
 let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Customer) =
-  let speed = 1000.0f;
+  let speed = 8000.0f;
   let customer =
     if ks.IsKeyDown(Keys.Left) then
       { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt
@@ -90,7 +90,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
     else
       customer
   { customer with Position = customer.Position + customer.Velocity * dt; 
-              Velocity = customer.Velocity * 0.9f }
+              Velocity = customer.Velocity * 0.0f }
 
 let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
