@@ -41,8 +41,7 @@ namespace SimulationSupermarkt
             spriteBatch.Begin();
             foreach (var drawable in SupermarktLogic.drawState(gameState))
             {
-                spriteBatch.Draw(Content.Load<Texture2D>(drawable.Image),
-                drawable.Position, Color.White);
+            
             }
             spriteBatch.End();
 
