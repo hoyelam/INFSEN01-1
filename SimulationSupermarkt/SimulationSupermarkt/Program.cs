@@ -38,9 +38,17 @@ namespace SimulationSupermarkt
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            //GraphicsDevice.Clear(Color.CornflowerBlue);
+            // Load the background content.
+            Texture2D background;
+            background = Content.Load<Texture2D>("background.png");
+
+            // Set the rectangle parameters.
+            Rectangle mainFrame;
+            mainFrame = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
             spriteBatch.Begin();
+            spriteBatch.Draw(background,mainFrame,Color.White);
             foreach (var drawable in SupermarktLogic.drawState(gameState))
             {
                 spriteBatch.Draw(Content.Load<Texture2D>(drawable.Image),
