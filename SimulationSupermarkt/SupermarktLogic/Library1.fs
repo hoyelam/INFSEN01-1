@@ -57,10 +57,16 @@ let initialState() =
       }
   }
 
+let checkBorder (newPos:Vector2) : bool =
+    // left wall
+    if newPos.X < 50.0f then
+        true
+    else
+        false
 
-
-let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Customer) =
+let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Customer) : Customer =
   let speed = 8000.0f;
+  let defaultVelocity = customer.Velocity;
   let customer =
     if ks.IsKeyDown(Keys.Left) then
       { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt
@@ -89,8 +95,16 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
       }
     else
       customer
-  { customer with Position = customer.Position + customer.Velocity * dt; 
-              Velocity = customer.Velocity * 0.0f }
+
+  let customer = 
+    let newPos = customer.Position + customer.Velocity * dt
+    if checkBorder newPos then
+       {customer with Velocity = defaultVelocity}
+    else
+       {customer with Position = newPos
+                      Velocity = customer.Velocity * 0.0f }
+
+  customer
 
 let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
