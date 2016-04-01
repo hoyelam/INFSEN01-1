@@ -54,6 +54,8 @@ let initialState() =
       }
   }
 
+
+
 let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Customer) =
   let speed = 1000.0f;
   let customer =
@@ -78,6 +80,12 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
       customer
   { customer with Position = customer.Position + customer.Velocity * dt; 
               Velocity = customer.Velocity * 0.9f }
+
+let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
+    {
+        gameState with Customer = moveCustomer ks ms dt gameState.Customer
+    } 
+     
 
 type Drawable =
     {
