@@ -3,10 +3,7 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
-type List<'a> = 
-  | Empty 
-  | Node of 'a * List<'a>
-let (<<) x xs = Node(x,xs)
+//let (<<) x xs = Node(x,xs)
 
 type Item = 
     {
@@ -14,11 +11,11 @@ type Item =
         Price:       int
     }
 
-type SectionItem =
+type Section =
     {
-        Position:    Vector2
+        Position1:   Vector2
+        Position2:   Vector2
         Category:    string
-        Item:        Item
     }
 
 type Customer = 
@@ -32,7 +29,8 @@ type Customer =
 
 type Register =
     {
-        Position:    Vector2
+        Position1:   Vector2
+        Position2:   Vector2
         Cash:        int
     }
 
@@ -40,33 +38,48 @@ type GameState =
     {
         Customer:       Customer
         Registers:      List<Register>
-        SectionItems:   List<SectionItem>
+        Sections:       List<Section>
     }
 
 let initialState() = 
   {
-    Registers   = Empty
-    SectionItems = Empty
-    Customer = 
+    Registers   = [
+                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Cash = 100}
+    ]
+    Sections    = [
+                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Candy"};
+                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Chips"};
+                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Beverages"};
+                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Fruit"};
+                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Bread"};
+    ] 
+    Customer    = 
       {
-        Position = Vector2(320.0f, 400.0f)
-        Velocity = Vector2.Zero
-        Bag = Empty
-        Money = 100
-        Image = "up.png"
+        Position    = Vector2(590.0f, 400.0f)
+        Velocity    = Vector2.Zero
+        Bag         = []
+        Money       = 100
+        Image       = "up.png"
       }
   }
 
-let checkBorder (newPos:Vector2) : bool =
+let checkSections (newPos:Vector2) (gamestate:GameState) : bool =
     // left wall
-    if newPos.X < 50.0f then
+    if newPos.X < 55.0f then
         true
+
+    // traverse all sections
+//    else if (newPos.X > kassa1.X && newPos.X < kassa2.X) && (newPos.Y > kassa1.Y && newPos.Y < kassa2.Y) then
+//        true
+
+    // no collisions
     else
         false
 
-let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Customer) : Customer =
-  let speed = 8000.0f;
-  let defaultVelocity = customer.Velocity;
+let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
+  let speed = 8000.0f
+  let customer = gamestate.Customer
+  let defaultVelocity = customer.Velocity
   let customer =
     if ks.IsKeyDown(Keys.Left) then
       { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt
@@ -98,7 +111,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
 
   let customer = 
     let newPos = customer.Position + customer.Velocity * dt
-    if checkBorder newPos then
+    if checkSections newPos gamestate then
        {customer with Velocity = defaultVelocity}
     else
        {customer with Position = newPos
@@ -108,7 +121,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
 
 let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
-        gameState with Customer = moveCustomer ks ms dt gameState.Customer
+        gameState with Customer = moveCustomer ks ms dt gameState
     } 
      
 
