@@ -37,21 +37,19 @@ type Register =
 type GameState =
     {
         Customer:       Customer
-        Registers:      List<Register>
+        Register:       Register
         Sections:       List<Section>
     }
 
 let initialState() = 
   {
-    Registers   = [
-                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Cash = 100}
-    ]
+    Register   = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
     Sections    = [
-                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Candy"};
-                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Chips"};
-                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Beverages"};
-                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Fruit"};
-                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Bread"};
+                    { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Category  = "Candy"};
+                    { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Category  = "Chips"};
+                    { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Category  = "Beverages"};
+                    { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Category  = "Fruit"};
+                    { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Category  = "Bread"};
     ] 
     Customer    = 
       {
@@ -63,23 +61,35 @@ let initialState() =
       }
   }
 
-let checkSections (newPos:Vector2) (gamestate:GameState) : bool =
-    // left wall
-    if newPos.X < 55.0f then
-        true
+let Collision (newPos:Vector2) (gamestate:GameState) : bool =
+    let mutable collision = false
 
-    // traverse all sections
-//    else if (newPos.X > kassa1.X && newPos.X < kassa2.X) && (newPos.Y > kassa1.Y && newPos.Y < kassa2.Y) then
-//        true
+    // check world borders
+    if newPos.X <= 0.0f then
+        collision <- true
+    else if newPos.Y <= 0.0f then
+        collision <- true
+    else if newPos.X >= 712.0f then
+        collision <- true
+    else if newPos.Y >= 428.0f then
+        collision <- true
 
-    // no collisions
-    else
-        false
+    // check all sections
+    for section in gamestate.Sections do      
+        if (newPos.X > section.Position1.X && newPos.X < section.Position2.X) && (newPos.Y > section.Position1.Y && newPos.Y < section.Position2.Y) then
+           collision <- true
+
+    // check kassa
+    if (newPos.X > gamestate.Register.Position1.X && newPos.X < gamestate.Register.Position2.X) && (newPos.Y > gamestate.Register.Position1.Y && newPos.Y < gamestate.Register.Position2.Y) then
+        collision <- true
+              
+    collision
 
 let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
   let speed = 8000.0f
   let customer = gamestate.Customer
   let defaultVelocity = customer.Velocity
+
   let customer =
     if ks.IsKeyDown(Keys.Left) then
       { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt
@@ -103,6 +113,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Game
       customer
   let customer = 
     if ks.IsKeyDown(Keys.Up) then
+//      printfn "%A %A" customer.Position.X customer.Position.Y
       { customer with Velocity = customer.Velocity - Vector2.UnitY * speed * dt 
                       Image    = "up.png"
       }
@@ -111,7 +122,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Game
 
   let customer = 
     let newPos = customer.Position + customer.Velocity * dt
-    if checkSections newPos gamestate then
+    if Collision newPos gamestate then
        {customer with Velocity = defaultVelocity}
     else
        {customer with Position = newPos
