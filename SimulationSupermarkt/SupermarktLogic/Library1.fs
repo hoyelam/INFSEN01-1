@@ -47,7 +47,7 @@ let initialState() =
                     { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Cash = 100}
     ]
     Sections    = [
-                    { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Candy"};
+                    { Position1 = Vector2(300.0f, 200.0f); Position2 = Vector2(600.0f, 400.0f); Category  = "Candy"};
                     { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Chips"};
                     { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Beverages"};
                     { Position1 = Vector2(200.0f, 200.0f); Position2 = Vector2(300.0f, 300.0f); Category  = "Fruit"};
@@ -64,13 +64,16 @@ let initialState() =
   }
 
 let checkSections (newPos:Vector2) (gamestate:GameState) : bool =
-//    // left wall
-//    if newPos.X < 55.0f then
-//        true
+    let found = false
 
     // traverse all sections
-//    else if (newPos.X > kassa1.X && newPos.X < kassa2.X) && (newPos.Y > kassa1.Y && newPos.Y < kassa2.Y) then
-//        true
+//    for section in gamestate.Sections do     
+//        if (newPos.X > section.Position1.X && newPos.X < section.Position2.X) && (newPos.Y > section.Position1.Y && newPos.Y < section.Position2.Y) then
+//            found = true
+                
+    // if newPos is on a section
+    if found then
+        true
 
     // no collisions
     else
