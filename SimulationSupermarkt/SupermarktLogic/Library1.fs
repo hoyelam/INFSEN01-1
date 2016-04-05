@@ -64,9 +64,9 @@ let initialState() =
   }
 
 let checkSections (newPos:Vector2) (gamestate:GameState) : bool =
-    // left wall
-    if newPos.X < 55.0f then
-        true
+//    // left wall
+//    if newPos.X < 55.0f then
+//        true
 
     // traverse all sections
 //    else if (newPos.X > kassa1.X && newPos.X < kassa2.X) && (newPos.Y > kassa1.Y && newPos.Y < kassa2.Y) then
