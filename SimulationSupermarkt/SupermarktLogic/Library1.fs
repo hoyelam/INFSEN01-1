@@ -15,7 +15,7 @@ type Section =
     {
         Position1:   Vector2
         Position2:   Vector2
-        Category:    string
+        Category:    Item
     }
 
 type Customer = 
@@ -41,22 +41,34 @@ type GameState =
         Sections:       List<Section>
     }
 
+let rec insert v i l =
+    match i, l with
+    | 0, xs -> v::xs
+    | i, x::xs -> x::insert v (i - 1) xs
+    | i, [] -> failwith "index out of range"
+
+let updateCustomerMoney (gameState: GameState) (item: Item) =
+    {
+        gameState.Customer with Money = gameState.Customer.Money - item.Price
+    }
+
+
 let initialState() = 
   {
     Register   = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
     Sections    = [
-                    { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Category  = "Candy"};
-                    { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Category  = "Chips"};
-                    { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Category  = "Beverages"};
-                    { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Category  = "Fruit"};
-                    { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Category  = "Bread"};
+                    { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Category  = {Category = "Candy"; Price = 5}};
+                    { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Category  = {Category = "Chips"; Price = 7}};
+                    { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Category  = {Category = "Bevarages"; Price = 10}};
+                    { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Category  = {Category = "Fruit"; Price = 2}};
+                    { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Category  = {Category = "Brood"; Price = 4}};
     ] 
     Customer    = 
       {
         Position    = Vector2(590.0f, 400.0f)
         Velocity    = Vector2.Zero
         Bag         = []
-        Money       = 100
+        Money       = 80
         Image       = "up.png"
       }
   }
@@ -111,6 +123,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Game
       }
     else
       customer
+
   let customer = 
     if ks.IsKeyDown(Keys.Up) then
 //      printfn "%A %A" customer.Position.X customer.Position.Y
@@ -128,12 +141,20 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Game
        {customer with Position = newPos
                       Velocity = customer.Velocity * 0.0f }
 
+   //pick up item
+  let customer =
+    if ks.IsKeyDown(Keys.Space) && gamestate.Customer.Money > 0 then
+      updateCustomerMoney gamestate gamestate.Sections.[1].Category
+    else
+      customer
+
+
   customer
 
 let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
         gameState with Customer = moveCustomer ks ms dt gameState
-    } 
+    }
      
 
 type Drawable =
@@ -149,3 +170,5 @@ let drawState (gameState: GameState) : seq<Drawable> =
             Drawable.Image    = gameState.Customer.Image
         }
     ] |> Seq.ofList
+
+
