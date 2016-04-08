@@ -3,10 +3,7 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
-type List<'a> = 
-  | Empty 
-  | Node of 'a * List<'a>
-let (<<) x xs = Node(x,xs)
+//let (<<) x xs = Node(x,xs)
 
 type Item = 
     {
@@ -14,11 +11,11 @@ type Item =
         Price:       int
     }
 
-type SectionItem =
+type Section =
     {
-        Position:    Vector2
+        Position1:   Vector2
+        Position2:   Vector2
         Category:    string
-        Item:        Item
     }
 
 type Customer = 
@@ -32,41 +29,67 @@ type Customer =
 
 type Register =
     {
-        Position:    Vector2
+        Position1:   Vector2
+        Position2:   Vector2
         Cash:        int
     }
 
 type GameState =
     {
         Customer:       Customer
-        Registers:      List<Register>
-        SectionItems:   List<SectionItem>
+        Register:       Register
+        Sections:       List<Section>
     }
 
 let initialState() = 
   {
-    Registers   = Empty
-    SectionItems = Empty
-    Customer = 
+    Register   = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
+    Sections    = [
+                    { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Category  = "Candy"};
+                    { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Category  = "Chips"};
+                    { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Category  = "Beverages"};
+                    { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Category  = "Fruit"};
+                    { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Category  = "Bread"};
+    ] 
+    Customer    = 
       {
-        Position = Vector2(320.0f, 400.0f)
-        Velocity = Vector2.Zero
-        Bag = Empty
-        Money = 100
-        Image = "up.png"
+        Position    = Vector2(590.0f, 400.0f)
+        Velocity    = Vector2.Zero
+        Bag         = []
+        Money       = 100
+        Image       = "up.png"
       }
   }
 
-let checkBorder (newPos:Vector2) : bool =
-    // left wall
-    if newPos.X < 50.0f then
-        true
-    else
-        false
+let Collision (newPos:Vector2) (gamestate:GameState) : bool =
+    let mutable collision = false
 
-let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Customer) : Customer =
-  let speed = 8000.0f;
-  let defaultVelocity = customer.Velocity;
+    // check world borders
+    if newPos.X <= 0.0f then
+        collision <- true
+    else if newPos.Y <= 0.0f then
+        collision <- true
+    else if newPos.X >= 712.0f then
+        collision <- true
+    else if newPos.Y >= 428.0f then
+        collision <- true
+
+    // check all sections
+    for section in gamestate.Sections do      
+        if (newPos.X > section.Position1.X && newPos.X < section.Position2.X) && (newPos.Y > section.Position1.Y && newPos.Y < section.Position2.Y) then
+           collision <- true
+
+    // check kassa
+    if (newPos.X > gamestate.Register.Position1.X && newPos.X < gamestate.Register.Position2.X) && (newPos.Y > gamestate.Register.Position1.Y && newPos.Y < gamestate.Register.Position2.Y) then
+        collision <- true
+              
+    collision
+
+let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
+  let speed = 8000.0f
+  let customer = gamestate.Customer
+  let defaultVelocity = customer.Velocity
+
   let customer =
     if ks.IsKeyDown(Keys.Left) then
       { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt
@@ -90,6 +113,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
       customer
   let customer = 
     if ks.IsKeyDown(Keys.Up) then
+//      printfn "%A %A" customer.Position.X customer.Position.Y
       { customer with Velocity = customer.Velocity - Vector2.UnitY * speed * dt 
                       Image    = "up.png"
       }
@@ -98,7 +122,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
 
   let customer = 
     let newPos = customer.Position + customer.Velocity * dt
-    if checkBorder newPos then
+    if Collision newPos gamestate then
        {customer with Velocity = defaultVelocity}
     else
        {customer with Position = newPos
@@ -108,7 +132,7 @@ let moveCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (customer:Custo
 
 let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
-        gameState with Customer = moveCustomer ks ms dt gameState.Customer
+        gameState with Customer = moveCustomer ks ms dt gameState
     } 
      
 
