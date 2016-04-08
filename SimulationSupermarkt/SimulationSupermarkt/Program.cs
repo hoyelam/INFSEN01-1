@@ -33,6 +33,9 @@ namespace SimulationSupermarkt
         {
             gameState = SupermarktLogic.updateState(Keyboard.GetState(), Mouse.GetState(), (float)gameTime.ElapsedGameTime.TotalSeconds,
             gameState);
+
+        
+
             base.Update(gameTime);
         }
 
@@ -48,15 +51,17 @@ namespace SimulationSupermarkt
             mainFrame = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
             spriteBatch.Begin();
-            SpriteFont font = Content.Load<SpriteFont>("Font");
+
             spriteBatch.Draw(background,mainFrame,Color.White);
             foreach (var drawable in SupermarktLogic.drawState(gameState))
             {
                 spriteBatch.Draw(Content.Load<Texture2D>(drawable.Image),
                 drawable.Position, Color.White);
             }
-            spriteBatch.DrawString(font, "Money: 100", new Vector2(20.0f, 445.0f), Color.Black);
-            spriteBatch.DrawString(font, "Inventory:", new Vector2(240.0f, 445.0f), Color.Black);
+
+            SpriteFont font = Content.Load<SpriteFont>("Font");
+            spriteBatch.DrawString(font, "Money: " + gameState.Customer.Money, new Vector2(20.0f, 445.0f), Color.Black);
+            spriteBatch.DrawString(font, "Inventory: ", new Vector2(240.0f, 445.0f), Color.Black);
 
             spriteBatch.End();
 

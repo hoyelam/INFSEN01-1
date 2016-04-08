@@ -43,7 +43,15 @@ type GameState =
         Sections:       List<Section>
     }
 
+
+let updateCustomerMoney (gameState: GameState) (item: Item) =
+    {
+        gameState.Customer with Money = gameState.Customer.Money - 100
+    }
+
+
 let initialState() = 
+
     {
         Register   = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
         Sections    = [
@@ -134,6 +142,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
+
   let customer = 
     if ks.IsKeyDown(Keys.Up) then
       { customer with Velocity = customer.Velocity - Vector2.UnitY * speed * dt 
@@ -157,12 +166,14 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
        {customer with Position = newPos
                       Velocity = customer.Velocity * 0.0f }
 
+
+
   customer
 
 let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
         gameState with Customer = updateCustomer ks ms dt gameState
-    } 
+    }
      
 
 type Drawable =
@@ -178,3 +189,5 @@ let drawState (gameState: GameState) : seq<Drawable> =
             Drawable.Image    = gameState.Customer.Image
         }
     ] |> Seq.ofList
+
+
