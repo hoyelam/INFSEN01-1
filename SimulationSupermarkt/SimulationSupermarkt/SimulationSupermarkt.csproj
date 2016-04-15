@@ -71,9 +71,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\background.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SupermarktLogic\SupermarktLogic.fsproj">
       <Project>{e136cefe-cfe3-4623-8dd4-feee2f0ae794}</Project>
       <Name>SupermarktLogic</Name>
@@ -95,7 +92,12 @@
     <Content Include="Content\right.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\customer.png" />
+    <Content Include="Resources\background.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\customer.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
