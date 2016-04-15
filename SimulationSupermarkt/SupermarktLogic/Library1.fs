@@ -36,11 +36,17 @@ type Register =
         Cash:        int
     }
 
+type State =
+    {
+        KeyboardSpace:  bool;
+    }
+
 type GameState =
     {
         Customer:       Customer
         Register:       Register
         Sections:       List<Section>
+        State   :       State
     }
 
 
@@ -53,7 +59,8 @@ let updateCustomerMoney (gameState: GameState) (item: Item) =
 let initialState() = 
 
     {
-        Register   = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
+        Register    = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
+        State       = { KeyboardSpace = false }
         Sections    = [
                     { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Item  = Candy};
                     { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Item  = Chips};
@@ -142,7 +149,6 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
-
   let customer = 
     if ks.IsKeyDown(Keys.Up) then
       { customer with Velocity = customer.Velocity - Vector2.UnitY * speed * dt 
@@ -150,8 +156,9 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
+
   let customer = 
-    if ks.IsKeyDown(Keys.Space) then
+    if ks.IsKeyDown(Keys.Space) && (not gamestate.State.KeyboardSpace) then
       AddItem customer gamestate
     else
       customer
@@ -166,13 +173,39 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
        {customer with Position = newPos
                       Velocity = customer.Velocity * 0.0f }
 
-
-
   customer
 
-let updateState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
+let updateState (ks:KeyboardState) (gamestate:GameState) : State =
+  let state = gamestate.State
+
+  let state =
+    if ks.IsKeyDown(Keys.Space) then
+      { 
+        state with KeyboardSpace = true
+      }
+    else
+      state
+  let state = 
+    if ks.IsKeyUp(Keys.Space) then
+      { 
+        state with KeyboardSpace = false
+      }
+    else
+      state
+
+  state
+
+let updateRegister (gamestate:GameState) : Register =
+  let register = gamestate.Register
+
+  register
+
+
+let updateGameState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
         gameState with Customer = updateCustomer ks ms dt gameState
+                       State    = updateState ks gameState
+                       Register = updateRegister gameState
     }
      
 
