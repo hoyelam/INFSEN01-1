@@ -12,7 +12,6 @@ type Item =
     | Chips 
     | Candy
 
-
 type Section =
     {
         Position1:   Vector2
@@ -57,16 +56,15 @@ let updateCustomerMoney (gameState: GameState) (item: Item) =
 
 
 let initialState() = 
-
     {
         Register    = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
         State       = { KeyboardSpace = false }
         Sections    = [
-                    { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Item  = Candy};
-                    { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Item  = Chips};
-                    { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Item  = Beverage};
-                    { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Item  = Vegetable};
-                    { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Item  = Bread};
+                        { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Item  = Candy};
+                        { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Item  = Chips};
+                        { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Item  = Beverage};
+                        { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Item  = Vegetable};
+                        { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Item  = Bread};
         ] 
         Customer    = 
         {
@@ -77,6 +75,7 @@ let initialState() =
             Image       = "up.png"
         }
     }
+
 
 let Collision (newPos:Vector2) (gamestate:GameState) : bool =
     let mutable collision = false
@@ -102,8 +101,8 @@ let Collision (newPos:Vector2) (gamestate:GameState) : bool =
               
     collision
 
-let AddItem (customer: Customer) (gamestate : GameState) : Customer =  
 
+let AddItem (customer: Customer) (gamestate : GameState) : Customer =  
     let mutable customer = customer;
 
     for section in gamestate.Sections do  
@@ -122,6 +121,7 @@ let AddItem (customer: Customer) (gamestate : GameState) : Customer =
                      customer <- { customer with Bag = List.append customer.Bag [section.Item] }
 
     customer
+
 
 let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
   let speed = 8000.0f
@@ -175,6 +175,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
 
   customer
 
+
 let updateState (ks:KeyboardState) (gamestate:GameState) : State =
   let state = gamestate.State
 
@@ -195,8 +196,11 @@ let updateState (ks:KeyboardState) (gamestate:GameState) : State =
 
   state
 
+
 let updateRegister (gamestate:GameState) : Register =
   let register = gamestate.Register
+
+  // TODO
 
   register
 
@@ -207,13 +211,14 @@ let updateGameState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:G
                        State    = updateState ks gameState
                        Register = updateRegister gameState
     }
+ 
      
-
 type Drawable =
     {
         Position: Vector2
         Image:    string
     }
+
 
 let drawState (gameState: GameState) : seq<Drawable> =
     [
@@ -222,5 +227,3 @@ let drawState (gameState: GameState) : seq<Drawable> =
             Drawable.Image    = gameState.Customer.Image
         }
     ] |> Seq.ofList
-
-
