@@ -31,7 +31,7 @@ namespace SimulationSupermarkt
 
         protected override void Update(GameTime gameTime)
         {
-            gameState = SupermarktLogic.updateState(Keyboard.GetState(), Mouse.GetState(), (float)gameTime.ElapsedGameTime.TotalSeconds,
+            gameState = SupermarktLogic.updateGameState(Keyboard.GetState(), Mouse.GetState(), (float)gameTime.ElapsedGameTime.TotalSeconds,
             gameState);
 
         
