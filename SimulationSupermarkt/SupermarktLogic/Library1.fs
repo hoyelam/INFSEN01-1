@@ -102,25 +102,71 @@ let Collision (newPos:Vector2) (gamestate:GameState) : bool =
     collision
 
 
-let AddItem (customer: Customer) (gamestate : GameState) : Customer =  
-    let mutable customer = customer;
+//let AddItem (customer: Customer) (gamestate : GameState) : Customer = 
+// 
+//    let mutable customer = customer;
+//
+//    for section in gamestate.Sections do  
+//            if (customer.Position.X > (section.Position1.X - 20.0f) && customer.Position.X < (section.Position2.X + 20.0f)) && (customer.Position.Y > (section.Position1.Y - 20.0f) && customer.Position.Y < (section.Position2.Y + 20.0f)) then 
+//                match section.Item with 
+//                | Candy -> 
+//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
+//                | Chips -> 
+//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
+//                | Beverage -> 
+//                     if (customer.Position.X > (section.Position1.X - 20.0f) && customer.Position.X < (section.Position2.X + 20.0f)) && (customer.Position.Y > (section.Position1.Y + 20.0f) && customer.Position.Y < (section.Position2.Y - 20.0f)) then 
+//                        customer <- { customer with Bag = List.append customer.Bag [section.Item] }
+//                | Vegetable -> 
+//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
+//                | Bread -> 
+//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
+//
+//    customer
+let AddItem (customer: Customer) (gamestate:GameState) : Customer =
+  let customer = gamestate.Customer
 
-    for section in gamestate.Sections do  
-            if (customer.Position.X > (section.Position1.X - 20.0f) && customer.Position.X < (section.Position2.X + 20.0f)) && (customer.Position.Y > (section.Position1.Y - 20.0f) && customer.Position.Y < (section.Position2.Y + 20.0f)) then 
-                match section.Item with 
-                | Candy -> 
-                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-                | Chips -> 
-                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-                | Beverage -> 
-                     if (customer.Position.X > (section.Position1.X - 20.0f) && customer.Position.X < (section.Position2.X + 20.0f)) && (customer.Position.Y > (section.Position1.Y + 20.0f) && customer.Position.Y < (section.Position2.Y - 20.0f)) then 
-                        customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-                | Vegetable -> 
-                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-                | Bread -> 
-                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
+  // Candy
+  let customer =
+    if(customer.Position.X > (gamestate.Sections.Item(0).Position1.X - 20.0f) && customer.Position.X < (gamestate.Sections.Item(0).Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Sections.Item(0).Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Sections.Item(0).Position2.Y + 20.0f)) then
+      { 
+        customer with Bag = List.append customer.Bag [gamestate.Sections.Item(0).Item]
+      }
+    else
+      customer
+  // Chips
+  let customer =
+    if(customer.Position.X > (gamestate.Sections.Item(1).Position1.X - 20.0f) && customer.Position.X < (gamestate.Sections.Item(1).Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Sections.Item(1).Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Sections.Item(1).Position2.Y + 20.0f)) then
+      { 
+        customer with Bag = List.append customer.Bag [gamestate.Sections.Item(1).Item]
+      }
+    else
+      customer
+  // Beverages
+  let customer =
+    if (customer.Position.X > (gamestate.Sections.Item(2).Position1.X - 20.0f) && customer.Position.X < (gamestate.Sections.Item(2).Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Sections.Item(2).Position1.Y + 20.0f) && customer.Position.Y < (gamestate.Sections.Item(2).Position2.Y - 20.0f)) then
+      { 
+        customer with Bag = List.append customer.Bag [gamestate.Sections.Item(2).Item]
+      }
+    else
+      customer
+  // Vegetable
+  let customer =
+    if(customer.Position.X > (gamestate.Sections.Item(3).Position1.X - 20.0f) && customer.Position.X < (gamestate.Sections.Item(3).Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Sections.Item(3).Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Sections.Item(3).Position2.Y + 20.0f)) then
+      { 
+        customer with Bag = List.append customer.Bag [gamestate.Sections.Item(3).Item]
+      }
+    else
+      customer
+  // Break
+  let customer =
+    if(customer.Position.X > (gamestate.Sections.Item(4).Position1.X - 20.0f) && customer.Position.X < (gamestate.Sections.Item(4).Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Sections.Item(4).Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Sections.Item(4).Position2.Y + 20.0f)) then
+      { 
+        customer with Bag = List.append customer.Bag [gamestate.Sections.Item(4).Item]
+      }
+    else
+      customer
 
-    customer
+  customer
 
 
 let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
