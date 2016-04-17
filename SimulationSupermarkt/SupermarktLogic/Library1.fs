@@ -3,6 +3,7 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
+
 //let (<<) x xs = Node(x,xs)
 
 type Item = 
@@ -76,6 +77,38 @@ let initialState() =
         }
     }
 
+let rec remove l predicate =
+    match l with
+    | [] -> []
+    | x::rest -> if predicate(x) then 
+                    (remove rest predicate) 
+                 else 
+                     x::(remove rest predicate)
+
+
+
+let Pay (item:Item) =
+
+    item
+
+let getFirstItem (l:List<Item>) :Item =
+    let item = l |> Seq.head
+    item
+
+
+let rec PayItem (customer:Customer) =
+    if customer.Bag.Length > 0 then
+        let item = getFirstItem customer.Bag
+        let customer = { 
+            customer with Bag = remove customer.Bag (fun x -> item = item)
+        }
+        PayItem customer
+    else
+        customer
+    
+
+
+    
 
 let Collision (newPos:Vector2) (gamestate:GameState) : bool =
     let mutable collision = false
@@ -101,27 +134,6 @@ let Collision (newPos:Vector2) (gamestate:GameState) : bool =
               
     collision
 
-
-//let AddItem (customer: Customer) (gamestate : GameState) : Customer = 
-// 
-//    let mutable customer = customer;
-//
-//    for section in gamestate.Sections do  
-//            if (customer.Position.X > (section.Position1.X - 20.0f) && customer.Position.X < (section.Position2.X + 20.0f)) && (customer.Position.Y > (section.Position1.Y - 20.0f) && customer.Position.Y < (section.Position2.Y + 20.0f)) then 
-//                match section.Item with 
-//                | Candy -> 
-//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-//                | Chips -> 
-//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-//                | Beverage -> 
-//                     if (customer.Position.X > (section.Position1.X - 20.0f) && customer.Position.X < (section.Position2.X + 20.0f)) && (customer.Position.Y > (section.Position1.Y + 20.0f) && customer.Position.Y < (section.Position2.Y - 20.0f)) then 
-//                        customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-//                | Vegetable -> 
-//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-//                | Bread -> 
-//                     customer <- { customer with Bag = List.append customer.Bag [section.Item] }
-//
-//    customer
 let AddItem (customer: Customer) (gamestate:GameState) : Customer =
   let customer = gamestate.Customer
 
@@ -165,9 +177,16 @@ let AddItem (customer: Customer) (gamestate:GameState) : Customer =
       }
     else
       customer
-
   customer
 
+let CheckOut (customer: Customer) (gamestate:GameState) : Customer =
+  let customer = gamestate.Customer
+  let customer =
+    if(customer.Position.X > (gamestate.Register.Position1.X - 20.0f) && customer.Position.X < (gamestate.Register.Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Register.Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Register.Position2.Y + 20.0f)) then
+      PayItem customer
+    else
+      customer
+  customer
 
 let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
   let speed = 8000.0f
@@ -202,14 +221,20 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
-
   let customer = 
     if ks.IsKeyDown(Keys.Space) && (not gamestate.State.KeyboardSpace) then
       AddItem customer gamestate
     else
       customer
 
+  let customer = 
+    if ks.IsKeyDown(Keys.C) && (not gamestate.State.KeyboardSpace) then
+      CheckOut customer gamestate
+    else
+      customer
+
   printfn "%A" customer.Bag
+ 
 
   let customer = 
     let newPos = customer.Position + customer.Velocity * dt
@@ -218,7 +243,6 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
     else
        {customer with Position = newPos
                       Velocity = customer.Velocity * 0.0f }
-
   customer
 
 
@@ -239,7 +263,6 @@ let updateState (ks:KeyboardState) (gamestate:GameState) : State =
       }
     else
       state
-
   state
 
 
