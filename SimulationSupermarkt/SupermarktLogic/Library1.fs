@@ -58,7 +58,7 @@ let updateCustomerMoney (gameState: GameState) (item: Item) =
 
 let initialState() = 
     {
-        Register    = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 100 }
+        Register    = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 0 }
         State       = { KeyboardSpace = false }
         Sections    = [
                         { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Item  = Candy};
@@ -80,10 +80,7 @@ let initialState() =
 let rec remove l predicate =
     match l with
     | [] -> []
-    | x::rest -> if predicate(x) then 
-                    (remove rest predicate) 
-                 else 
-                     x::(remove rest predicate)
+    | x::rest -> rest
 
 
 
@@ -95,20 +92,81 @@ let getFirstItem (l:List<Item>) :Item =
     let item = l |> Seq.head
     item
 
+let getLastItem (l:List<Item>) :Item =
+    let item = l |> Seq.last
+    item
 
-let rec PayItem (customer:Customer) =
+let getSubList (l:List<Item>) (length: int) : List<Item> =
+    let subList =  l |> Seq.take length
+    List.ofSeq subList
+
+let getSpecificItem (l:List<Item>) (position: int) : Item = 
+    let subList = getSubList l position
+    let item = getLastItem subList
+    item
+
+let rec emptyBag (customer:Customer) =
     if customer.Bag.Length > 0 then
         let item = getFirstItem customer.Bag
         let customer = { 
             customer with Bag = remove customer.Bag (fun x -> item = item)
         }
-        PayItem customer
+        emptyBag customer
     else
         customer
-    
 
+let rec PayItem (customer:Customer) (count: int) : Customer =
+    if customer.Bag.Length >= count then
+        let item = getSpecificItem customer.Bag count
+        let customer = 
+            match item with 
+                | Beverage ->   { 
+                                    customer with Money = customer.Money - 5
+                                }   
+                | Bread ->      { 
+                                    customer with Money = customer.Money - 10
+                                }
+                | Vegetable ->  { 
+                                    customer with Money = customer.Money - 10
+                                }
+                | Chips ->      { 
+                                    customer with Money = customer.Money - 5
+                                }
+                | Candy ->      { 
+                                    customer with Money = customer.Money - 5
+                                }
 
-    
+        PayItem customer (count + 1)
+    else
+        let customer = emptyBag customer
+        customer   
+
+let rec claimMoneys (register:Register) (customer:Customer) (count: int) : Register =
+   
+    if customer.Bag.Length >= count then
+        let item = getSpecificItem customer.Bag count
+        let register = 
+            match item with 
+                | Beverage ->   { 
+                                    register with Cash = register.Cash + 5
+                                }   
+                | Bread ->      { 
+                                    register with Cash = register.Cash + 10
+                                }
+                | Vegetable ->  { 
+                                    register with Cash = register.Cash + 10
+                                }
+                | Chips ->      { 
+                                    register with Cash = register.Cash + 5
+                                }
+                | Candy ->      { 
+                                    register with Cash = register.Cash + 5
+                                }
+
+        claimMoneys register customer (count + 1)
+    else        
+        register   
+
 
 let Collision (newPos:Vector2) (gamestate:GameState) : bool =
     let mutable collision = false
@@ -169,7 +227,7 @@ let AddItem (customer: Customer) (gamestate:GameState) : Customer =
       }
     else
       customer
-  // Break
+  // Bread
   let customer =
     if(customer.Position.X > (gamestate.Sections.Item(4).Position1.X - 20.0f) && customer.Position.X < (gamestate.Sections.Item(4).Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Sections.Item(4).Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Sections.Item(4).Position2.Y + 20.0f)) then
       { 
@@ -183,7 +241,7 @@ let CheckOut (customer: Customer) (gamestate:GameState) : Customer =
   let customer = gamestate.Customer
   let customer =
     if(customer.Position.X > (gamestate.Register.Position1.X - 20.0f) && customer.Position.X < (gamestate.Register.Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Register.Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Register.Position2.Y + 20.0f)) then
-      PayItem customer
+      PayItem customer 1
     else
       customer
   customer
@@ -221,6 +279,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
+
   let customer = 
     if ks.IsKeyDown(Keys.Space) && (not gamestate.State.KeyboardSpace) then
       AddItem customer gamestate
@@ -266,19 +325,22 @@ let updateState (ks:KeyboardState) (gamestate:GameState) : State =
   state
 
 
-let updateRegister (gamestate:GameState) : Register =
-  let register = gamestate.Register
-
-  // TODO
+let updateRegister (ks:KeyboardState) (gamestate:GameState) : Register =
+  let register = 
+    if ks.IsKeyDown(Keys.C) && (not gamestate.State.KeyboardSpace) && (gamestate.Customer.Position.X > (gamestate.Register.Position1.X - 20.0f)) && (gamestate.Customer.Position.X < (gamestate.Register.Position2.X + 20.0f)) && (gamestate.Customer.Position.Y > (gamestate.Register.Position1.Y - 20.0f)) && (gamestate.Customer.Position.Y < (gamestate.Register.Position2.Y + 20.0f)) then
+        claimMoneys gamestate.Register gamestate.Customer 1
+    else
+        gamestate.Register
 
   register
 
 
 let updateGameState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     {
-        gameState with Customer = updateCustomer ks ms dt gameState
+        gameState with Register = updateRegister ks gameState
+                       Customer = updateCustomer ks ms dt gameState
                        State    = updateState ks gameState
-                       Register = updateRegister gameState
+                       
     }
  
      

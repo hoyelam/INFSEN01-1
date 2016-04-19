@@ -62,7 +62,7 @@ namespace SimulationSupermarkt
             SpriteFont font = Content.Load<SpriteFont>("Font");
             spriteBatch.DrawString(font, "Money: " + gameState.Customer.Money, new Vector2(20.0f, 445.0f), Color.Black);
             spriteBatch.DrawString(font, "Inventory: ", new Vector2(240.0f, 445.0f), Color.Black);
-            spriteBatch.DrawString(font, "Store: ", new Vector2(660.0f, 445.0f), Color.Black);
+            spriteBatch.DrawString(font, "Store: " + gameState.Register.Cash, new Vector2(660.0f, 445.0f), Color.Black);
 
             spriteBatch.End();
 
