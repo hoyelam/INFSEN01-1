@@ -3,7 +3,6 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
-
 //let (<<) x xs = Node(x,xs)
 
 type Item = 
@@ -49,12 +48,10 @@ type GameState =
         State   :       State
     }
 
-
 let updateCustomerMoney (gameState: GameState) (item: Item) =
     {
         gameState.Customer with Money = gameState.Customer.Money - 100
     }
-
 
 let initialState() = 
     {
@@ -82,10 +79,7 @@ let rec remove l predicate =
     | [] -> []
     | x::rest -> rest
 
-
-
 let Pay (item:Item) =
-
     item
 
 let getFirstItem (l:List<Item>) :Item =
@@ -165,7 +159,6 @@ let rec claimMoneyZ (register:Register) (customer:Customer) (count: int) : Regis
         claimMoneyZ register customer (count + 1)
     else        
         register   
-
 
 let Collision (newPos:Vector2) (gamestate:GameState) : bool =
     let mutable collision = false
@@ -250,6 +243,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
   let customer = gamestate.Customer
   let defaultVelocity = customer.Velocity
 
+  // left
   let customer =
     if ks.IsKeyDown(Keys.Left) then
       { customer with Velocity = customer.Velocity - Vector2.UnitX * speed * dt
@@ -257,6 +251,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
+  // right
   let customer = 
     if ks.IsKeyDown(Keys.Right) then
       { customer with Velocity = customer.Velocity + Vector2.UnitX * speed * dt 
@@ -264,6 +259,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
+  // down
   let customer =
     if ks.IsKeyDown(Keys.Down) then
       { customer with Velocity = customer.Velocity + Vector2.UnitY * speed * dt 
@@ -271,6 +267,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
+  // up
   let customer = 
     if ks.IsKeyDown(Keys.Up) then
       { customer with Velocity = customer.Velocity - Vector2.UnitY * speed * dt 
@@ -278,13 +275,15 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
-
+  
+  // space
   let customer = 
     if ks.IsKeyDown(Keys.Space) && (not gamestate.State.KeyboardSpace) then
       AddItem customer gamestate
     else
       customer
 
+  // c
   let customer = 
     if ks.IsKeyDown(Keys.C) && (not gamestate.State.KeyboardSpace) then
       CheckOut customer gamestate
@@ -300,8 +299,7 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
                       Velocity = customer.Velocity * 0.0f }
   customer
 
-
-let updateState (ks:KeyboardState) (gamestate:GameState) : State =
+let updateState (ks:KeyboardState,gamestate:GameState) : State =
   let state = gamestate.State
 
   let state =
@@ -320,8 +318,7 @@ let updateState (ks:KeyboardState) (gamestate:GameState) : State =
       state
   state
 
-
-let updateRegister (ks:KeyboardState) (gamestate:GameState) : Register =
+let updateRegister (ks:KeyboardState,gamestate:GameState) : Register =
   let register = 
     if ks.IsKeyDown(Keys.C) && (not gamestate.State.KeyboardSpace) && (gamestate.Customer.Position.X > (gamestate.Register.Position1.X - 20.0f)) && (gamestate.Customer.Position.X < (gamestate.Register.Position2.X + 20.0f)) && (gamestate.Customer.Position.Y > (gamestate.Register.Position1.Y - 20.0f)) && (gamestate.Customer.Position.Y < (gamestate.Register.Position2.Y + 20.0f)) then
         claimMoneyZ gamestate.Register gamestate.Customer 1
@@ -330,22 +327,20 @@ let updateRegister (ks:KeyboardState) (gamestate:GameState) : Register =
 
   register
 
-
 let updateGameState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
+    let tuple = (ks, gameState)
     {
-        gameState with Register = updateRegister ks gameState
+        
+        gameState with Register = updateRegister tuple
                        Customer = updateCustomer ks ms dt gameState
-                       State    = updateState ks gameState
-                       
+                       State    = updateState tuple                  
     }
  
-     
 type Drawable =
     {
         Position: Vector2
         Image:    string
     }
-
 
 let drawState (gameState: GameState) : seq<Drawable> =
     [
