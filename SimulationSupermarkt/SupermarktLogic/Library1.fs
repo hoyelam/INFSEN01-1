@@ -141,8 +141,7 @@ let rec PayItem (customer:Customer) (count: int) : Customer =
         let customer = emptyBag customer
         customer   
 
-let rec claimMoneys (register:Register) (customer:Customer) (count: int) : Register =
-   
+let rec claimMoneyZ (register:Register) (customer:Customer) (count: int) : Register =
     if customer.Bag.Length >= count then
         let item = getSpecificItem customer.Bag count
         let register = 
@@ -163,7 +162,7 @@ let rec claimMoneys (register:Register) (customer:Customer) (count: int) : Regis
                                     register with Cash = register.Cash + 5
                                 }
 
-        claimMoneys register customer (count + 1)
+        claimMoneyZ register customer (count + 1)
     else        
         register   
 
@@ -292,9 +291,6 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
     else
       customer
 
-  printfn "%A" customer.Bag
- 
-
   let customer = 
     let newPos = customer.Position + customer.Velocity * dt
     if Collision newPos gamestate then
@@ -328,7 +324,7 @@ let updateState (ks:KeyboardState) (gamestate:GameState) : State =
 let updateRegister (ks:KeyboardState) (gamestate:GameState) : Register =
   let register = 
     if ks.IsKeyDown(Keys.C) && (not gamestate.State.KeyboardSpace) && (gamestate.Customer.Position.X > (gamestate.Register.Position1.X - 20.0f)) && (gamestate.Customer.Position.X < (gamestate.Register.Position2.X + 20.0f)) && (gamestate.Customer.Position.Y > (gamestate.Register.Position1.Y - 20.0f)) && (gamestate.Customer.Position.Y < (gamestate.Register.Position2.Y + 20.0f)) then
-        claimMoneys gamestate.Register gamestate.Customer 1
+        claimMoneyZ gamestate.Register gamestate.Customer 1
     else
         gamestate.Register
 
