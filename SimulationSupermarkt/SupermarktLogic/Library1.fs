@@ -5,24 +5,27 @@ open Microsoft.Xna.Framework.Input
 
 //let (<<) x xs = Node(x,xs)
 
+
+
+
 type Item = 
     | Beverage 
     | Bread
-    | Vegetable 
-    | Chips 
-    | Candy
+    | Vegetable  
+    | Chips  
+    | Candy  
 
 type Section =
     {
         Position1:   Vector2
         Position2:   Vector2
-        Item:        Item
+        Item:        Item * int
     }
 
 type Customer = 
     {
         Position:    Vector2
-        Bag:         List<Item>
+        Bag:         List<(Item * int)>
         Velocity:    Vector2
         Money:       int
         Image:       string
@@ -56,15 +59,15 @@ let updateCustomerMoney (gameState: GameState) (item: Item) =
     }
 
 let initialState() = 
-    {
+    {   
         Register    = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 0 }
         State       = { KeyboardSpace = false }
         Sections    = [
-                        { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Item  = Candy};
-                        { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Item  = Chips};
-                        { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Item  = Beverage};
-                        { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Item  = Vegetable};
-                        { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Item  = Bread};
+                        { Position1 = Vector2(50.0f, 390.0f); Position2 = Vector2(507.0f, 430.0f);  Item  = (Candy, 5)};
+                        { Position1 = Vector2(158.0f, 257.0f); Position2 = Vector2(507.0f, 293.0f); Item  = (Chips,5)};
+                        { Position1 = Vector2(0.0f, 15.0f); Position2 = Vector2(50.0f, 390.0f);     Item  = (Beverage,5)};
+                        { Position1 = Vector2(158.0f, 117.0f); Position2 = Vector2(507.0f, 152.0f); Item  = (Vegetable,10)};
+                        { Position1 = Vector2(50.0f, -30.0f); Position2 = Vector2(507.0f, 25.0f);   Item  = (Bread,10)};
         ] 
         Customer    = 
         {
@@ -115,21 +118,12 @@ let rec claimMoneyZ (register:Register) (customer:Customer) (count: int) : Money
     if customer.Bag.Length >= count then
         let item = getSpecificItem customer.Bag count
 
-        let (register:Register) = 
-            match item with 
-                | Beverage ->   { register with Cash = register.Cash + 5 }   
-                | Bread ->      { register with Cash = register.Cash + 10}
-                | Vegetable ->  { register with Cash = register.Cash + 10}
-                | Chips ->      { register with Cash = register.Cash + 5 }
-                | Candy ->      { register with Cash = register.Cash + 5 }
-
+        let (register:Register) =  
+            {register with Cash = register.Cash + snd(item)}
+         
+                
         let (customer:Customer) = 
-                    match item with 
-                        | Beverage ->   {  customer with Money = customer.Money - 5 }   
-                        | Bread ->      {  customer with Money = customer.Money - 10}
-                        | Vegetable ->  {  customer with Money = customer.Money - 10}
-                        | Chips ->      {  customer with Money = customer.Money - 5 }
-                        | Candy ->      {  customer with Money = customer.Money - 5 }
+             {  customer with Money = customer.Money - snd(item)}   
 
         claimMoneyZ register customer (count + 1)
     else
@@ -171,7 +165,7 @@ let AddItem (customer: Customer) (gamestate:GameState) : Customer =
   let customer =
     if(customer.Position.X > (gamestate.Sections.Item(0).Position1.X - 20.0f) && customer.Position.X < (gamestate.Sections.Item(0).Position2.X + 20.0f)) && (customer.Position.Y > (gamestate.Sections.Item(0).Position1.Y - 20.0f) && customer.Position.Y < (gamestate.Sections.Item(0).Position2.Y + 20.0f)) then
       { 
-        customer with Bag = List.append customer.Bag [gamestate.Sections.Item(0).Item]
+        customer with Bag = List.append customer.Bag [ gamestate.Sections.Item(0).Item]
       }
     else
       customer
