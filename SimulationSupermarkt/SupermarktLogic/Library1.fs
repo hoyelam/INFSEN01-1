@@ -120,8 +120,7 @@ let rec claimMoneyZ (register:Register) (customer:Customer) (count: int) : Money
 
         let (register:Register) =  
             {register with Cash = register.Cash + snd(item)}
-         
-                
+             
         let (customer:Customer) = 
              {  customer with Money = customer.Money - snd(item)}   
 
