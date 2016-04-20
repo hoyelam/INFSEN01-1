@@ -76,7 +76,7 @@ let initialState() =
         }
     }
 
-let rec remove l predicate =
+let remove l predicate =
     match l with
     | [] -> []
     | x::rest -> rest
@@ -84,19 +84,19 @@ let rec remove l predicate =
 let Pay (item:Item) =
     item
 
-let getFirstItem (l:List<Item>) :Item =
+let getFirstItem (l:List<'a>)  =
     let item = l |> Seq.head
     item
 
-let getLastItem (l:List<Item>) :Item =
+let getLastItem (l:List<'a>) =
     let item = l |> Seq.last
     item
 
-let getSubList (l:List<Item>) (length: int) : List<Item> =
+let getSubList (l:List<'a>) (length: int) =
     let subList =  l |> Seq.take length
     List.ofSeq subList
 
-let getSpecificItem (l:List<Item>) (position: int) : Item = 
+let getSpecificItem (l:List<'a>) (position: int) = 
     let subList = getSubList l position
     let item = getLastItem subList
     item
@@ -136,28 +136,32 @@ let rec claimMoneyZ (register:Register) (customer:Customer) (count: int) : Money
         let customer = emptyBag customer
         (customer,register)   
 
+let rec checkSectionCollision (l:List<Section>) (count: int) (newPos:Vector2) : bool =
+    let section = (getSpecificItem l count) 
+    if (newPos.X > section.Position1.X && newPos.X< section.Position2.X) && (newPos.Y > section.Position1.Y && newPos.Y < section.Position2.Y) then
+        true
+    else if count < l.Length then
+        checkSectionCollision l (count + 1) newPos
+    else
+        false
+
+let checkRegisterCollision (r:Register) (newPos:Vector2): bool =
+    if (newPos.X > r.Position1.X && newPos.X < r.Position2.X) && (newPos.Y > r.Position1.Y && newPos.Y < r.Position2.Y) then
+        true
+    else
+        false
+
+let checkWorldBorders(newPos:Vector2): bool =
+    if newPos.X <= 0.0f || newPos.Y <= 0.0f || newPos.X >= 712.0f || newPos.Y >= 428.0f then
+        true
+    else
+        false
+
 let Collision (newPos:Vector2) (gamestate:GameState) : bool =
-    let mutable collision = false
-
-    // check world borders
-    if newPos.X <= 0.0f then
-        collision <- true
-    else if newPos.Y <= 0.0f then
-        collision <- true
-    else if newPos.X >= 712.0f then
-        collision <- true
-    else if newPos.Y >= 428.0f then
-        collision <- true
-
-    // check all sections
-    for section in gamestate.Sections do      
-        if (newPos.X > section.Position1.X && newPos.X < section.Position2.X) && (newPos.Y > section.Position1.Y && newPos.Y < section.Position2.Y) then
-           collision <- true
-
-    // check kassa
-    if (newPos.X > gamestate.Register.Position1.X && newPos.X < gamestate.Register.Position2.X) && (newPos.Y > gamestate.Register.Position1.Y && newPos.Y < gamestate.Register.Position2.Y) then
-        collision <- true
-              
+    
+    let collision = false
+     // check borders
+    let collision = checkWorldBorders newPos|| checkSectionCollision gamestate.Sections 1 newPos || checkRegisterCollision gamestate.Register newPos
     collision
 
 let AddItem (customer: Customer) (gamestate:GameState) : Customer =
