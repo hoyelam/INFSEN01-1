@@ -3,11 +3,6 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
-//let (<<) x xs = Node(x,xs)
-
-
-
-
 type Item = 
     | Beverage 
     | Bread
@@ -53,11 +48,6 @@ type GameState =
         State   :       State
     }
 
-let updateCustomerMoney (gameState: GameState) (item: Item) =
-    {
-        gameState.Customer with Money = gameState.Customer.Money - 100
-    }
-
 let initialState() = 
     {   
         Register    = { Position1 = Vector2(663.0f, -30.0f); Position2 = Vector2(718.0f, 364.0f); Cash = 0 }
@@ -83,9 +73,6 @@ let remove l predicate =
     match l with
     | [] -> []
     | x::rest -> rest
-
-let Pay (item:Item) =
-    item
 
 let getFirstItem (l:List<'a>)  =
     let item = l |> Seq.head
@@ -151,10 +138,7 @@ let checkWorldBorders(newPos:Vector2): bool =
         false
 
 let Collision (newPos:Vector2) (gamestate:GameState) : bool =
-    
-    let collision = false
-     // check borders
-    let collision = checkWorldBorders newPos|| checkSectionCollision gamestate.Sections 1 newPos || checkRegisterCollision gamestate.Register newPos
+    let collision = checkWorldBorders newPos || checkSectionCollision gamestate.Sections 1 newPos || checkRegisterCollision gamestate.Register newPos
     collision
 
 let AddItem (customer: Customer) (gamestate:GameState) : Customer =
@@ -248,14 +232,12 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       }
     else
       customer
-  
   // space
   let customer = 
     if ks.IsKeyDown(Keys.Space) && (not gamestate.State.KeyboardSpace) then
       AddItem customer gamestate
     else
       customer
-
   // c
   let customer = 
     if ks.IsKeyDown(Keys.C) && (not gamestate.State.KeyboardSpace) then
