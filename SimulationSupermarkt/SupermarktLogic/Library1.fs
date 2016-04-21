@@ -2,10 +2,8 @@
 
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
-
-//let (<<) x xs = Node(x,xs)
-
-
+open System.Threading
+open System
 
 
 type Item = 
@@ -83,9 +81,6 @@ let remove l predicate =
     match l with
     | [] -> []
     | x::rest -> rest
-
-let Pay (item:Item) =
-    item
 
 let getFirstItem (l:List<'a>)  =
     let item = l |> Seq.head
@@ -202,6 +197,16 @@ let AddItem (customer: Customer) (gamestate:GameState) : Customer =
       customer
   customer
 
+let rec PrintBag (c:Customer) (i:int): Customer=
+    if c.Bag.Length >= i then
+        let item = getSpecificItem c.Bag i 
+        printfn "%A" item
+        PrintBag c (i+1)
+    else
+        printfn "%A" " End Bag \n"
+        c
+
+
 let CheckOut (customer: Customer) (gamestate:GameState) : Customer =
   let customer = gamestate.Customer
   let customer =
@@ -210,6 +215,12 @@ let CheckOut (customer: Customer) (gamestate:GameState) : Customer =
     else
       customer
   customer
+
+let Finish (c:Customer) :bool =
+    if c.Position.X > 532.0f && c.Position.X < 641.0f && c.Position.Y = 2.2209816f then
+        true
+    else
+        false
 
 let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
   let speed = 8000.0f
@@ -263,18 +274,35 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
     else
       customer
 
+  // B
+  let customer = 
+    if ks.IsKeyDown(Keys.B) && (not gamestate.State.KeyboardSpace) then
+      printfn "%A" "Start Bag"
+      PrintBag customer 1
+    else
+      customer
+
   let customer = 
     let newPos = customer.Position + customer.Velocity * dt
     if Collision newPos gamestate then
        {customer with Velocity = defaultVelocity}
+    else if Finish customer then
+       if customer.Bag.IsEmpty && customer.Money >= 0 then
+          printfn "%A" "SUCCES"
+        else
+          printfn "%A" "FAILED"
+       Thread.Sleep(3000)
+       Environment.Exit 1
+       customer
     else
        {customer with Position = newPos
                       Velocity = customer.Velocity * 0.0f }
   customer
 
+
+
 let updateState (ks:KeyboardState,gamestate:GameState) : State =
   let state = gamestate.State
-
   let state =
     if ks.IsKeyDown(Keys.Space) then
       { 
@@ -301,11 +329,11 @@ let updateRegister (ks:KeyboardState,gamestate:GameState) : Register =
 
 let updateGameState (ks:KeyboardState) (ms:MouseState) (dt:float32) (gameState:GameState) =
     let tuple = (ks, gameState)
+
     {
-        
         gameState with Register = updateRegister tuple
                        Customer = updateCustomer ks ms dt gameState
-                       State    = updateState tuple                  
+                       State    = updateState tuple        
     }
  
 type Drawable =
