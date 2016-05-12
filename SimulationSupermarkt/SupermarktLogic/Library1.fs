@@ -10,6 +10,12 @@ type Item =
     | Chips  
     | Candy  
 
+type aritmic = 
+    | Plus
+    | Minus
+    | Divide
+    | Multiply
+
 type Section =
     {
         Position1:   Vector2
@@ -87,6 +93,11 @@ let getSubList (l:List<'a>) (length: int) =
     List.ofSeq subList
 
 let getSpecificItem (l:List<'a>) (position: int) = 
+    let subList = getSubList l position
+    let item = getLastItem subList
+    item
+
+let getSpecificTuple (l:List<'T * 'T>) (position: int) = 
     let subList = getSubList l position
     let item = getLastItem subList
     item
@@ -195,6 +206,46 @@ let CheckOut (customer: Customer) (gamestate:GameState) : Customer =
       customer
   customer
 
+let Fizzbuzz (int1: int) (int2: int) : string =
+    let response = 
+        if (int1 % 4) = 0 && (int2 % 4) = 0 then
+            "fizzbuzz"
+        elif (int1 % 4) = 0 then
+            "fizz"
+        elif (int2 % 4) = 0 then
+            "buzz"
+        else
+            "None"
+    response
+
+let rec Zip (list1: List<'T>) (list2: List<'T>) (combined: List<'T * 'T>) (count: int) : List<'T * 'T> =
+  let combined =    
+    if list1.Length >= count then
+       let item = [getSpecificItem (list1) (count), getSpecificItem (list2) (count)]
+       let combined = List.append combined item
+
+       Zip list1 list2 combined (count + 1)
+    else
+       combined
+
+  combined
+
+let rec Unzip (combined: List<'T * 'T>) (expanded: List<'T> * List<'T>) (count: int) : List<'T> * List<'T> =
+  let expanded =    
+    if combined.Length >= count then 
+        let item = getSpecificTuple combined count
+        let firstItem = fst item
+        let secondItem = snd item
+
+        let list1 = List.append (fst expanded) [firstItem]
+        let list2 = List.append (snd expanded) [secondItem]
+
+        Unzip combined (list1, list2) (count + 1)
+    else
+       expanded
+
+  expanded
+
 let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:GameState) : Customer =
   let speed = 8000.0f
   let customer = gamestate.Customer
@@ -244,6 +295,35 @@ let updateCustomer (ks:KeyboardState) (ms:MouseState) (dt:float32) (gamestate:Ga
       CheckOut customer gamestate
     else
       customer
+
+  // TEMPORARY DEMO CODE
+  let demo = 
+    if ks.IsKeyDown(Keys.D1) && (not gamestate.State.KeyboardSpace) then
+        printf "%s" (Fizzbuzz 4 8)
+        printf "%s" " "
+        printf "%s" (Fizzbuzz 4 9)
+        printf "%s" " "
+        printf "%s" (Fizzbuzz 5 8)
+        printf "%s" " "
+        printf "%s" (Fizzbuzz 5 9)
+        printf "%s" " END "
+        "empty"
+    else
+        "empty"
+  let demo = 
+    if ks.IsKeyDown(Keys.D2) && (not gamestate.State.KeyboardSpace) then
+        let list1 = [1; 2; 3;]
+        let list2 = [4; 5; 6;]
+        let zip = Zip list1 list2 [] 1
+        printf "%A" zip
+        let unzip = Unzip zip ([],[]) 1
+        let restored1 = fst unzip
+        let restored2 = snd unzip
+        printf "%A" restored1
+        printf "%A" restored2
+        "empty"
+    else
+        "empty"
 
   let customer = 
     let newPos = customer.Position + customer.Velocity * dt
